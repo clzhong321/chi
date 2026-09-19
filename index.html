@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的个人主页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            transition: all 0.3s ease;
+            border-left: 5px solid #2563eb;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            color: #1e40af;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        ul {
+            padding-left: 25px;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        ul li::before {
+            content: "✓";
+            color: #2563eb;
+            font-weight: bold;
+            position: absolute;
+            left: -20px;
+        }
+
+        button {
+            margin: 15px 0;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s ease-out;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(40);
+                opacity: 0;
+            }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #64748b;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* 留言板样式 */
+        #message-form {
+            margin-top: 20px;
+        }
+
+        #message-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            resize: vertical;
+            min-height: 80px;
+            font-size: 16px;
+        }
+
+        #messages-list {
+            margin-top: 20px;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        #messages-list li {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #2563eb;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+            padding-top: 50px;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+
+        #caption {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+            text-align: center;
+            color: #ccc;
+            padding: 10px 0;
+            height: 50px;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* 图片样式 */
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .image-container img {
+            width: 100%;
+            max-width: 200px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .image-container img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 新增的图片浏览器样式 */
+        .image-viewer {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .main-image {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .main-image:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .navigation {
+            margin: 30px 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .thumbnails-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+            max-height: 150px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .thumbnail:hover {
+            transform: scale(1.1);
+            border-color: #2563eb;
+        }
+
+        .thumbnail.active {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>我的个人主页</h1>
+        <p>记录生活，分享心情</p>
+    </header>
+
+    <main>
+        <section class="card" id="about-card">
+            <h2>关于我</h2>
+            <p>你好，欢迎来到我的个人主页！我是一名热爱生活的前端开发者。这个网站是我学习HTML、CSS和JavaScript的第一个作品，虽然简单，但充满了我的热情和努力。</p>
+            <p>在这里，你可以了解到我的一些兴趣爱好，看到我分享的生活照片，还可以在留言板留下你的足迹。希望通过这个小小的空间，能和你分享我的故事，也期待听到你的声音。</p>
+            <button id="color-btn">点我改变文字颜色</button>
+        </section>
+
+        <section class="card">
+            <h2>图片</h2>
+            <p>这里有一些我喜欢的动漫和自然风光图片，希望你也能喜欢。点击下方按钮或缩略图来浏览吧！</p>
+
+            <div class="image-viewer" id="imageViewer">
+                <!-- 主图片 -->
+                <img id="mainImage" src="https://picsum.photos/seed/anime1/800/500.jpg" alt="动漫图片" class="main-image" onclick="openModal(this.src, this.alt)">
+
+                <!-- 导航按钮 -->
+                <div class="navigation">
+                    <button id="prevBtn" class="nav-btn">上一张</button>
+                    <button id="nextBtn" class="nav-btn">下一张</button>
+                </div>
+
+                <!-- 缩略图容器 -->
+                <div class="thumbnails-container" id="thumbnailsContainer">
+                    <!-- 缩略图将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>好句摘抄</h2>
+            <p id="sentence-text" style="font-size:1.2rem; color:#333;line-height:1.8;margin:20px 0;"></p>
+        </section>
+
+        <section class="card">
+            <h2>留言板</h2>
+            <p>欢迎在下方留言，分享你的想法和建议。每一条留言我都会认真阅读和回复的！</p>
+            <form id="message-form">
+                <textarea id="message-input" placeholder="写下你的留言..." required></textarea>
+                <button type="submit">提交留言</button>
+            </form>
+            <ul id="messages-list"></ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>©2026 我的个人主页 | 一个充满故事的地方</p>
+    </footer>
+
+    <!-- 图片预览模态框 -->
+    <div id="myModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+        <div id="caption"></div>
+    </div>
+
+    <script>
+        // 改变"关于我"卡片文字颜色
+        const colorBtn = document.getElementById('color-btn');
+        const aboutCard = document.getElementById('about-card');
+
+        const colors = [
+            '#1e40af', '#dc2626', '#065f46', '#b45309', '#6d28d9'
+        ];
+
+        let currentColorIndex = 0;
+
+        colorBtn.addEventListener('click', function() {
+            currentColorIndex = (currentColorIndex + 1) % colors.length;
+            aboutCard.style.color = colors[currentColorIndex];
+            aboutCard.querySelector('h2').style.color = colors[currentColorIndex];
+        });
+
+        // 留言板功能
+        const messageForm = document.getElementById('message-form');
+        const messageInput = document.getElementById('message-input');
+        const messagesList = document.getElementById('messages-list');
+
+        messageForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const messageText = messageInput.value.trim();
+            if (messageText) {
+                const listItem = document.createElement('li');
+                listItem.textContent = messageText;
+                messagesList.appendChild(listItem);
+                messageInput.value = '';
+                messagesList.scrollTop = messagesList.scrollHeight;
+            }
+        });
+
+        // 模态框功能
+        const modal = document.getElementById('myModal');
+        const modalImage = document.getElementById('modalImage');
+        const captionText = document.getElementById('caption');
+
+        function openModal(imgSrc, imgAlt) {
+            modal.style.display = "block";
+            modalImage.src = imgSrc;
+            captionText.textContent = imgAlt;
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // 为按钮添加波纹效果
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const circle = document.createElement('span');
+                const diameter = Math.max(button.clientWidth, button.clientHeight);
+                const radius = diameter / 2;
+
+                circle.style.width = circle.style.height = `${diameter}px`;
+                circle.style.left = `${e.clientX - button.getBoundingClientRect().left - radius}px`;
+                circle.style.top = `${e.clientY - button.getBoundingClientRect().top - radius}px`;
+                circle.classList.add('ripple');
+
+                const ripple = button.getElementsByClassName('ripple')[0];
+                if (ripple) {
+                    ripple.remove();
+                }
+
+                button.appendChild(circle);
+            });
+        });
+
+        // 图片浏览器功能
+        const images = [
+            { src: 'https://picsum.photos/seed/anime1/800/500.jpg', alt: '动漫少女' },
+            { src: 'https://picsum.photos/seed/nature1/800/500.jpg', alt: '山川河流' },
+            { src: 'https://picsum.photos/seed/anime2/800/500.jpg', alt: '动漫风景' },
+            { src: 'https://picsum.photos/seed/nature2/800/500.jpg', alt: '森林湖泊' },
+            { src: 'https://picsum.photos/seed/anime3/800/500.jpg', alt: '动漫角色' },
+            { src: 'https://picsum.photos/seed/nature3/800/500.jpg', alt: '雪山' },
+            { src: 'https://picsum.photos/seed/anime4/800/500.jpg', alt: '动漫城市' },
+            { src: 'https://picsum.photos/seed/nature4/800/500.jpg', alt: '海滩' },
+            { src: 'https://picsum.photos/seed/anime5/800/500.jpg', alt: '动漫星空' },
+            { src: 'https://picsum.photos/seed/nature5/800/500.jpg', alt: '瀑布' }
+        ];
+
+        let currentImageIndex = 0;
+        const mainImage = document.getElementById('mainImage');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const thumbnailsContainer = document.getElementById('thumbnailsContainer');
+
+        // 初始化缩略图
+        function initThumbnails() {
+            images.forEach((img, index) => {
+                const thumbnail = document.createElement('img');
+                thumbnail.src = img.src;
+                thumbnail.alt = img.alt;
+                thumbnail.className = 'thumbnail';
+                if (index === 0) {
+                    thumbnail.classList.add('active');
+                }
+                thumbnail.addEventListener('click', () => {
+                    currentImageIndex = index;
+                    updateImage();
+                });
+                thumbnailsContainer.appendChild(thumbnail);
+            });
+        }
+
+        // 更新主图片和缩略图状态
+        function updateImage() {
+            const img = images[currentImageIndex];
+            mainImage.src = img.src;
+            mainImage.alt = img.alt;
+
+            // 更新缩略图的active状态
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            thumbnails.forEach((thumb, index) => {
+                if (index === currentImageIndex) {
+                    thumb.classList.add('active');
+                } else {
+                    thumb.classList.remove('active');
+                }
+            });
+        }
+
+        // 上一张按钮事件
+        prevBtn.addEventListener('click', () => {
+            currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+            updateImage();
+        });
+
+        // 下一张按钮事件
+        nextBtn.addEventListener('click', () => {
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            updateImage();
+        });
+
+        // 随机好句
+        const sentences = [
+            "风遇山止，船到岸停，前路漫漫亦灿灿。",
+            "且将新火试新茶，诗酒趁年华。",
+            "星光不问赶路人，时光不负有心人。",
+            "山野万里，云朵是藏在微风里的欢喜。",
+            "慢慢来，好戏都在烟火里。",
+            "保持热爱，奔赴山海。",
+            "心有丘壑，眼存山河。",
+            "落日归山海，山海藏深意。",
+            "愿你遍历山河，仍觉人间值得。",
+            "前路风新日暖，万事尽可期待。",
+            "于无声处听惊雷，于无色处见繁花。",
+            "追光的人，终会光芒万丈。"
+        ];
+        function showRandomSentence(){
+            const randIndex = Math.floor(Math.random() * sentences.length);
+            document.getElementById("sentence-text").innerText = sentences[randIndex];
+        }
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            initThumbnails();
+            showRandomSentence();
+        }
+    </script>
+</body>
+</html>
